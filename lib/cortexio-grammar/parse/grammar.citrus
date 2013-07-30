@@ -1,0 +1,113 @@
+grammar CortexIOGrammar
+	
+	rule statement
+		space? (recover | create | modify | remove | context | expand) space?
+	end
+	
+	rule context
+		`context` space (level space)? (uuid | uuid_set | `with` space expression)
+	end
+	
+	rule expand
+		`expand` space (level space)? (uuid | uuid_set | `with` space expression)
+	end
+	
+	rule recover
+		`recover` space (level space)? (uuid | uuid_set)
+	end
+	
+	rule modify
+		`modify` # entity
+	end
+	
+	rule remove
+		`remove` space `element` space (uuid | uuid_set)
+	end
+	
+	rule set_external
+		`set(e)` space? '=' uuid_set		
+	end
+	
+	rule set_internal
+		`set(i)` space? '=' uuid_set
+	end
+
+	rule set_attribute
+		`set(a)` space? '=' attribute_set
+	end
+	
+	
+	rule attribute_set		
+		space? '{' space? (attribute (',' space? attribute)* space?)? '}' space?
+	end
+	
+	rule attribute
+		attribute_key space? '=' space? attribute_value space?
+	end
+	
+	rule expression
+		expression_either (space? (`and` | `or`) space? expression_either)? space?
+	end
+
+	rule expression_either
+		(attribute | expression_precedent)
+	end
+	
+	
+	rule expression_precedent
+		'(' space? expression ')' space?
+	end
+	
+	rule attribute_key
+		quoted_string
+	end
+
+	rule attribute_value
+		quoted_string
+	end
+
+	rule level
+		(numeric | `max`)
+	end
+
+	rule uuid_set
+		space? '{' space? (uuid (space? ',' space? uuid)* space?)? '}' space?
+	end
+	
+	rule uuid
+		numeric
+	end
+
+	rule quote
+		"\""
+	end
+	
+	rule quoted_string
+		/".*?"/ 
+	end
+	
+	rule numeric
+		[0-9]+
+	end
+	
+	rule alphanumeric
+		[a-zA-Z0-9]+
+	end
+	
+	rule create
+		(create_element | create_attribute)
+	end
+	
+	rule create_element
+		`create` space `element` space set_internal? space? set_external? space? set_attribute?
+	end
+	
+	rule create_attribute
+		`create` space `attribute` space (attribute | attribute_set)
+	end
+
+  rule space
+    [ \t]+
+  end
+
+end

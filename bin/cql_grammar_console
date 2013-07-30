@@ -1,0 +1,35 @@
+#!/usr/bin/env ruby
+
+require 'citrus'
+
+$LOAD_PATH.unshift File.join(File.dirname(__FILE__), '..', 'lib')
+require 'cortexio-grammar' # Citrus.load 'grammar', :force => true
+
+valid = true
+invalid = false
+prompt = '> '
+
+puts "\n#{__FILE__}. Copyright (C) 2011 TGen. All rights reserved."
+puts "Enter one statement per line."
+puts "'#{valid}' will be returned iff the statment is syntactically and grammatically correct."
+print "The grammar definition will be reloaded before parsing each statement.\n\n#{prompt}"
+
+begin
+	while(line = STDIN.readline.chop)
+		break if line.match /(quit)|(exit)/
+		begin
+			CortexIOGrammar.parse line
+			puts valid
+		rescue Exception => e
+			puts e
+			puts invalid
+		end
+		print prompt
+	end
+rescue EOFError => e
+	# Probably just hit CTRL-D or something. Regardless, time to go!
+	puts ""
+end
+
+puts "Later!"
+
