@@ -1,22 +1,19 @@
 # Copyright 2011 TGen. All rights reserved.
 # Author: Preston Lee <plee@tgen.org>
 
-require 'helper'
+require_relative '../../test_helper'
 
 
-class GrammarTest < Test::Unit::TestCase
+class GrammarTest < Minitest::Test
 
-	def test_fail
-		flunk "D'oh!"
-	end
 	# Helper function for batch rule validation.
 	def assert_rule_with_data(rule = 'statement', good, bad)
 		good.each do |line|
-			assert_not_nil @g.parse line, :root => rule
+			refute_nil @g.parse line, :root => rule
 		end
 		
 		bad.each do |line|
-			assert_raise(Citrus::ParseError) { @g.parse line, :root => rule }
+			assert_raises(Citrus::ParseError) { @g.parse line, :root => rule }
 		end
 	end
 	
